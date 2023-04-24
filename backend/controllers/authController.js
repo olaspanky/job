@@ -1,24 +1,24 @@
+
 const User = require('../models/userModel');
-const ErrorResponse = require("../utils/errorResponse")
+const ErrorResponse = require('../utils/errorResponse');
 
-exports.signup = async (req, res, next)=> {
-    const {email} = req.body;
-    const userExist = await User.findOne({email})
 
-    if (userExist){
-        return next(new ErrorResponse("E-mail already registered", 400));
+exports.signup = async (req, res, next) => {
+    const { email } = req.body;
+    const userExist = await User.findOne({ email });
+    if (userExist) {
+        return next(new ErrorResponse("E-mail already registred", 400));
     }
     try {
-            const user = await User.create(req.body);
-            res.status(201).json({
-                success: true,
-                user
-            })
-    } catch(error){
+        const user = await User.create(req.body);
+        res.status(201).json({
+            success: true,
+            user
+        })
+    } catch (error) {
         next(error);
     }
-};
-
+}
 
 
 exports.signin = async (req, res, next) => {
@@ -51,16 +51,17 @@ exports.signin = async (req, res, next) => {
     }
 }
 
-const sendTokenResponse = async(user, codeStatus, res)=> {
+const sendTokenResponse = async (user, codeStatus, res) => {
     const token = await user.getJwtToken();
-    res.status(codeStatus)
-    .cookie('token', token, {maxAge: 60*60*1000, httpOnly: true})
-    .json({success: true, token, user})
+    res
+        .status(codeStatus)
+        .cookie('token', token, { maxAge: 60 * 60 * 1000, httpOnly: true })
+        .json({ success: true, token, user })
 }
 
-//logout
 
-exports.logout = (req, res, next)=>{
+// log out
+exports.logout = (req, res, next) => {
     res.clearCookie('token');
     res.status(200).json({
         success: true,
@@ -68,7 +69,8 @@ exports.logout = (req, res, next)=>{
     })
 }
 
-//user Profile
+
+// user profile
 exports.userProfile = async (req, res, next) => {
 
     const user = await User.findById(req.user.id).select('-password');
@@ -78,3 +80,6 @@ exports.userProfile = async (req, res, next) => {
         user
     })
 }
+
+
+
